@@ -96,9 +96,6 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    for (arg <- args)
-      println("Arg "+arg)
-
     if(args.contains("-location"))
       {
         val locationStrings = args(args.indexOf("-location")+1).split(",")
