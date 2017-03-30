@@ -12,7 +12,7 @@ object Main {
   val CATEGORY_URL: String = BASE_URL + "crime-categories"
   val STREET_CRIME_REPORT_URL: String = BASE_URL + "crimes-street/all-crime"
   val TIMEOUT: Int = 5000000
-  val COLUMN_WIDTH: Int = 50
+  val COLUMN_WIDTH: Int = 60
 
   var categoryMap: Map[String, String] = Map()
   var availabilityList: List[String] = List()
@@ -38,9 +38,9 @@ object Main {
 
     val responseJson = parse(response.body).children
 
-    printf("-" * (COLUMN_WIDTH * 3))
+    println("-" * (COLUMN_WIDTH * 3))
     addPaddingAndPrint(Array("Category", "Location", "Outcome"))
-    printf("-" * (COLUMN_WIDTH * 3))
+    println("-" * (COLUMN_WIDTH * 3))
 
     for (item <- responseJson) {
       val category = item \ "category"
