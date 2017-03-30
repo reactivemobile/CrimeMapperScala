@@ -1,6 +1,7 @@
 /**
   * Created by donalocallaghan on 29/03/2017.
   */
+
 import scalaj.http._
 import net.liftweb.json._
 
@@ -11,6 +12,7 @@ object Main {
   val CATEGORY_URL: String = BASE_URL + "crime-categories"
   val STREET_CRIME_REPORT_URL: String = BASE_URL + "crimes-street/all-crime"
   val TIMEOUT: Int = 5000000
+  val COLUMN_WIDTH: Int = 50
 
   var categoryMap: Map[String, String] = Map()
   var availabilityList: List[String] = List()
@@ -36,24 +38,30 @@ object Main {
 
     val responseJson = parse(response.body).children
 
-    println("Category \t\t Location \t\t ID \t\t Outcome")
-
-    val tab: String = "\t\t"
+    printf("-" * (COLUMN_WIDTH * 3))
+    addPaddingAndPrint(Array("Category", "Location", "Outcome"))
+    printf("-" * (COLUMN_WIDTH * 3))
 
     for (item <- responseJson) {
       val category = item \ "category"
       val categoryKey = if (category != null) category.extract[String] else "none"
       val categoryString = if (categoryMap.contains(categoryKey)) categoryMap(categoryKey) else "no category available"
+
       val locationString = (item \ "location" \ "street" \ "name").extract[String]
 
-      val persistent_id = (item \ "persistent_id").extract[String]
-      val persistentIdClean = if (persistent_id.length == 0) "no id available" else persistent_id
-
       val outcome = item \ "outcome_status"
-      val outcomeString = if (outcome != JNull) (outcome \ "category").extract[String] else "No outcome available"
+      val outcomeString = if (outcome != JNull) (outcome \ "date").extract[String] + " " + (outcome \ "category").extract[String] else "No outcome available"
 
-      println(categoryString + tab + locationString + tab + persistentIdClean + tab + outcomeString)
+      addPaddingAndPrint(Array(categoryString, locationString, outcomeString))
     }
+  }
+
+  def addPaddingAndPrint(strings: Array[String]): Unit = {
+    var toPrint: StringBuilder = StringBuilder.newBuilder
+    for (string <- strings) {
+      toPrint.append(string.padTo(COLUMN_WIDTH, ' '))
+    }
+    println(toPrint)
   }
 
   def loadCategoryMap(): Unit = {
@@ -77,8 +85,8 @@ object Main {
 
     val responseJson = parse(response.body).children
 
-    if(availabilityOnly) {
-        println("Available dates:")
+    if (availabilityOnly) {
+      println("Available dates:")
     }
 
     for (item <- responseJson) {
@@ -96,28 +104,23 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    if(args.contains("-location"))
-      {
-        val locationStrings = args(args.indexOf("-location")+1).split(",")
-        latitude = locationStrings(0)
-        longitude = locationStrings(1)
-      }
+    if (args.contains("-location")) {
+      val locationStrings = args(args.indexOf("-location") + 1).split(",")
+      latitude = locationStrings(0)
+      longitude = locationStrings(1)
+    }
 
-    if(args.contains("-availability"))
-      {
-        availabilityOnly = true
-        loadAvailability()
-      }
-    else
-    if(args.contains("-date"))
-      {
-        dateSelected = args(args.indexOf("-date")+1)
-        loadCategoryMap()
-      }
-    else
-      {
-        // Default
-        loadAvailability()
-      }
+    if (args.contains("-availability")) {
+      availabilityOnly = true
+      loadAvailability()
+    }
+    else if (args.contains("-date")) {
+      dateSelected = args(args.indexOf("-date") + 1)
+      loadCategoryMap()
+    }
+    else {
+      // Default
+      loadAvailability()
+    }
   }
 }
