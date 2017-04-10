@@ -1,4 +1,4 @@
-# CrimeMapperScala
+# CrimeMapperScala [![Build Status](https://travis-ci.org/reactivemobile/CrimeMapperScala.svg?branch=master)](https://travis-ci.org/reactivemobile/CrimeMapperScala)
 This is a simple Scala application for downloading and displaying crime report data from the UK Police. See https://data.police.uk/ for API documentation
 
 The app is just a proof-of-concept / learning experience for the moment. 
